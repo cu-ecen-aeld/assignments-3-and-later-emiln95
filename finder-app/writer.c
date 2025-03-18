@@ -11,6 +11,7 @@ int main(int argc, char* argv[]){
     if(argc != 3){
         syslog(LOG_ERR,"Invalid amount of arguments, should be 2, writefile and writestr, got %d args.",(argc-1));
         printf("Inavlid amount of arguments, should be 2, writefile and writestr, got %d args.\n",(argc-1));
+        return 1;
     } 
 
     char* filename = argv[1];
@@ -29,11 +30,11 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-    int ret;
+    size_t ret;
     ret = fwrite(writestr, sizeof(char), sizeof(char)*strlen(writestr),file);
     
     if (ret != sizeof(char)*strlen(writestr)){
-        syslog(LOG_ERR, "Error encounterd while writing data. fwrite returned: %d",ret);
+        syslog(LOG_ERR, "Error encounterd while writing data. fwrite returned: %zu",ret);
         syslog(LOG_ERR, "The errno was: %d : %s\n", errno, strerror(errno));
         fclose(file);
         return 1;
@@ -41,8 +42,8 @@ int main(int argc, char* argv[]){
 
     ret = fwrite("\n", sizeof(char), sizeof(char),file);
     
-    if (ret != sizeof(char)*strlen(writestr)){
-        syslog(LOG_ERR, "Error encounterd while writing data. fwrite returned: %d",ret);
+    if (ret != sizeof(char)){
+        syslog(LOG_ERR, "Error encounterd while writing newline data. fwrite returned: %zu",ret);
         syslog(LOG_ERR, "The errno was: %d : %s\n", errno, strerror(errno));
         fclose(file);
         return 1;
