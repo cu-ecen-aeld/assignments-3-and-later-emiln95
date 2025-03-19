@@ -1,4 +1,11 @@
 #include "systemcalls.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/syslog.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -16,8 +23,15 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+    int ret = 0;
+    ret = system(cmd);
 
-    return true;
+    if (ret == 0){
+        return true;
+    }else{
+        return false;
+    }
+
 }
 
 /**
@@ -58,10 +72,30 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+    pid_t p;
+    int wstatus,waitstat;
+    p = fork();
+
+    if (p<0){
+        perror("something whent wrong forking...");
+        exit(1);
+    }else if(p==0){
+        printf("im the child and i got command: %s and args %s\n", command[0], command[1]);
+        execv(command[0],command);
+        exit(EXIT_FAILURE);
+    }else{
+        waitstat = wait(&wstatus);
+        printf("wait complete with exit status: %d, and wait retunred: %d\n",WEXITSTATUS(wstatus),waitstat);
+    }
 
     va_end(args);
 
-    return true;
+    if(WEXITSTATUS(wstatus) != 0){
+        return false;
+    }else{
+        return true;
+    }
+
 }
 
 /**
@@ -93,7 +127,29 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
+
+    pid_t childpid;
+    int wstatus, waitstat;
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if(fd < 0) {perror("Something whent worng opening file."); abort();}
+
+    switch(childpid = fork()){
+        case -1: perror("Something whent wrong forking.");abort();
+        case 0: //Child code:
+            if(dup2(fd,STDOUT_FILENO) < 0){perror("Error moving stdout to file.");abort();}
+            execv(command[0], command);
+            exit(EXIT_FAILURE);
+        default:
+            close(fd);
+            waitstat = wait(&wstatus);
+            printf("wait complete with exit status: %d and wait returned: %d \n",WEXITSTATUS(wstatus),waitstat);
+    }
+
     va_end(args);
 
-    return true;
+    if(WEXITSTATUS(wstatus) != 0){
+        return false;
+    }else{
+        return true;
+    }
 }
