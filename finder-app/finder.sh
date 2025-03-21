@@ -20,4 +20,3 @@ number_files=$(grep -r $searchstr $filesdir/* | cut -f1 -d":" | uniq | wc -l)
 number_matched_lines=$(grep -r $searchstr $filesdir/* | wc -l)
 
 echo "The number of files are $number_files and the number of matching lines are $number_matched_lines"
-    
