@@ -1,19 +1,26 @@
 CROSS_COMPILE="" 
 
-compiler="$(CROSS_COMPILE)gcc"
-output="$(CROSS_COMPILE)writer"
+CC="$(CROSS_COMPILE)gcc"
+TARGET="$(CROSS_COMPILE)writer"
+CFLAGS=
+INCLUDES=
+OBJ=writer.o
+LDGLAFS=
 
-all : writer.o
 
-$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) -o $(TARGET) $(LDGLAFS)
+all: $(CROSS_COMPILE)writer
+
 
 $(CROSS_COMPILE)writer: writer.o
 
-	eval "$(compiler) writer.o -o $(output)"
+	eval "$(CC) $(CFLAGS) $(INCLUDES) $(OBJ) -o $(TARGET) $(LDGLAFS)"
+#	eval "$(CC) writer.o -o $(output)"
 
 writer.o: writer.c
 
-	eval "$(compiler) -c -Wall writer.c -o writer.o"
+
+	eval "$(CC) $(CFLAGS) $(INCLUDES) -c -Wall writer.c -o writer.o $(LDGLAFS)"
+#	eval "$(compiler) -c -Wall writer.c -o writer.o"
 
 
 clean: 
