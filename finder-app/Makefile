@@ -5,8 +5,7 @@ output="$(CROSS_COMPILE)writer"
 
 all : writer.o
 
-	eval "aarch64-none-linux-gnu-gcc writer.o -o aarch64-none-linux-gnu-writer"
-	eval "gcc writer.o -o writer"
+$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) -o $(TARGET) $(LDGLAFS)
 
 $(CROSS_COMPILE)writer: writer.o
 
