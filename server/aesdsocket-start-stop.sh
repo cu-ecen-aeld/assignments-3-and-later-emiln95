@@ -3,7 +3,7 @@
 if [ $1 = "start" ]; then
 
     echo "Starting aesdsocket"
-    start-stop-daemon -S -n aesdsocket -a /usr/bin/aesdsocket -d
+    start-stop-daemon -S -n aesdsocket --exec /usr/bin/aesdsocket -- -d
 
 
 elif [ $1 = "stop" ]; then
